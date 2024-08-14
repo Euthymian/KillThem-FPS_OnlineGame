@@ -20,4 +20,6 @@ MonoBehaviour:
   fireRate: 0.1
   bulletPerShoot: 0
   ammoCapacity: 30
+  spreadRange: {x: 0, y: 0}
   reloadTime: 2.43
+  hasScope: 0

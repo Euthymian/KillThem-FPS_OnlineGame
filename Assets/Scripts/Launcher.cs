@@ -5,12 +5,18 @@ using Photon.Pun;
 using TMPro;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
+using System;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
     public static Launcher Instance;
     private void Awake()
     {
+        if (Instance)
+        {
+            Destroy(Instance);
+            return;
+        }
         Instance = this;
     }
 
@@ -36,16 +42,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     #region Setup
     void Start()
     {
-        if (PhotonNetwork.IsConnected)
-        {
-            //if (PhotonNetwork.InRoom)
-            //{
-            //    PhotonNetwork.JoinRoom(PhotonNetwork.CurrentRoom.Name);
-            //}
-            //else
-            PhotonNetwork.JoinLobby();
-            return;
-        }
         PhotonNetwork.ConnectUsingSettings();
         Debug.Log("Connected using setting file");
     }
@@ -97,7 +93,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
         MenuManager.Instance.OpenMenu("Error");
-        errorText.text = "Room Creation Failed: " + message;
+        errorText.text = "CreateRoom Failed: " + message;
     }
     #endregion
 
@@ -106,11 +102,6 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.LeaveRoom();
         MenuManager.Instance.OpenMenu("Loading");
-    }
-
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        print("Reason:" + message);
     }
 
     public override void OnLeftRoom()
@@ -143,8 +134,15 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         foreach (KeyValuePair<string, RoomInfo> entry in cachedRoomList)
         {
+            Debug.Log("name: "+entry.Value.Name+"   num of player: " + entry.Value.PlayerCount + "   status: " + entry.Value.IsOpen);
             Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().Setup(cachedRoomList[entry.Key]);
         }
+    }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        MenuManager.Instance.OpenMenu("Error");
+        errorText.text = "JoinRoom Failed: " + message;
     }
 
     public void JoinRoom(RoomInfo roomInfo)
@@ -165,8 +163,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         PhotonNetwork.CurrentRoom.IsVisible = false;
         PhotonNetwork.CurrentRoom.IsOpen = false;
         PhotonNetwork.LoadLevel(1);
-        
     }
-    #endregion
 
-}
+        #endregion
+
+    }

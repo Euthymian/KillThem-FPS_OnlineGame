@@ -2,12 +2,16 @@ using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Realtime;
 
-public class LeaveRoom : MonoBehaviour
+public class LeaveRoom : MonoBehaviourPunCallbacks
 {
     public void OnClick()
     {
-        PhotonNetwork.LoadLevel(0);
         PhotonNetwork.LeaveRoom();
+    }
+    public override void OnLeftRoom()
+    {
+        PhotonNetwork.LoadLevel(0);
     }
 }

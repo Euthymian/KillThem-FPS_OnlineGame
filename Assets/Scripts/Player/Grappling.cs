@@ -110,8 +110,9 @@ public class Grappling : MonoBehaviour
         if (grapplePointRelativeYPos < 0) highestPointOnArc = overShootYAxis;
 
         pc.JumpToPos(grapplePoint, highestPointOnArc);
+        grappleCooldownTimer = grappleCooldown;
 
-        Invoke(nameof(StopGrapple), 1f);
+        //Invoke(nameof(StopGrapple), 1f);
     }
 
     public void StopGrapple()
@@ -121,7 +122,6 @@ public class Grappling : MonoBehaviour
 
         isGrappling = false;
 
-        grappleCooldownTimer = grappleCooldown;
 
         lr.enabled = false;
     }

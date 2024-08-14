@@ -5,10 +5,9 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.Events;
 
-public class DeathMatchManager : MonoBehaviour
+public class DeathMatchManager : GameModeManager
 {
-    int maxTime = 10;
-    float timeRemain;
+    [SerializeField] int timeForDeathMatch = 4;
 
     [SerializeField] TMP_Text minuteText;
     [SerializeField] TMP_Text secondText;
@@ -20,10 +19,11 @@ public class DeathMatchManager : MonoBehaviour
 
     private void Start()
     {
+        maxTime = timeForDeathMatch;
         timeRemain = maxTime;
         PhotonNetwork.AutomaticallySyncScene = false;
-        InvokeRepeating(nameof(GetMinutes), 0, 40f);
-        InvokeRepeating(nameof (GetSeconds), 0, 0.5f);
+        InvokeRepeating(nameof(GetMinutes), 0.1f, 40f);
+        InvokeRepeating(nameof (GetSeconds), 0, 0.8f);
     }
 
     private void Update()
@@ -33,11 +33,6 @@ public class DeathMatchManager : MonoBehaviour
 
         if(timeRemain <= 0)
         {
-            //if (readyToLoad && PhotonNetwork.IsMasterClient)
-            //{
-            //    PhotonNetwork.LoadLevel(0);
-            //}
-
             if(readyToLoad)
             {
                 Cursor.lockState = CursorLockMode.None;
@@ -63,6 +58,6 @@ public class DeathMatchManager : MonoBehaviour
 
     void GetSeconds()
     {
-        secondText.text = ((int)timeRemain - (int)(timeRemain / 60)*60).ToString();
+        secondText.text = Mathf.Ceil((int)timeRemain - (int)(timeRemain/60)*60).ToString();
     }
 }

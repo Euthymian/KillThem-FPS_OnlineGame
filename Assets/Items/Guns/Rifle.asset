@@ -22,4 +22,4 @@ MonoBehaviour:
   ammoCapacity: 6
   spreadRange: {x: 0, y: 0}
   reloadTime: 3.67
-  hasScope: 0
+  hasScope: 1

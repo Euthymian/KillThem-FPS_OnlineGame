@@ -63,7 +63,10 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     [SerializeField] GameObject[] itemsUI;
     [SerializeField] TMP_Text maxAmmoText;
     [SerializeField] TMP_Text currentAmmoText;
-    int currentItemIndex, previousItemIndex = -1;
+    int currentItemIndex = 0, previousItemIndex = -1;
+
+    [SerializeField] Animator rifleAnim;
+    bool onScope=false;
 
     [Header("Key Bindings")]
     KeyCode reloadKey = KeyCode.R;
@@ -74,6 +77,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     PhotonView pv;
 
     bool firstTimeCalled = true;
+    bool equipRifleFirstTime = true;
 
     private void Awake()
     {
@@ -96,8 +100,6 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             Destroy(rb);
             Destroy(ui);
         }
-
-
     }
 
     void GetFPS()
@@ -132,6 +134,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         UseGun();
         Reload();
         ReloadUI();
+        ChangeScopeStatus();
     }
 
     private void FixedUpdate()
@@ -296,7 +299,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
         Vector3 velocityY = Vector3.up * Mathf.Sqrt(-2 * gravity * trajactoryHeight);
         Vector3 velocityXZ = displacementXZ / (Mathf.Sqrt(-2 * trajactoryHeight / gravity) + Mathf.Sqrt(2 * (displacementY - trajactoryHeight) / gravity));
-          
+
         return velocityXZ + velocityY;
     }
 
@@ -346,6 +349,13 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
         currentItemIndex = _index;
         items[currentItemIndex].itemGameObject.SetActive(true);
+
+        if (((Gun)items[currentItemIndex]).itemInfo.itemName == "Rifle" && equipRifleFirstTime && !pv.IsMine)
+        {
+            equipRifleFirstTime = false;
+            Destroy(items[currentItemIndex].GetComponentInChildren<Camera>());
+        }
+
         // Update GunUI
         if (pv.IsMine)
         {
@@ -472,6 +482,26 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             }
 
             gun.WasReloading = gun.IsReloading;
+        }
+    }
+
+    void ChangeScopeStatus()
+    {
+        if (Input.GetMouseButtonDown(1))
+        {
+            if (((Gun)items[currentItemIndex]).GunInfor.hasScope)
+            {
+                if (!onScope)
+                {
+                    onScope = true;
+                    rifleAnim.SetTrigger("OnScope");
+                }
+                else
+                {
+                    onScope = false;
+                    rifleAnim.SetTrigger("OffScope");
+                }
+            }
         }
     }
 

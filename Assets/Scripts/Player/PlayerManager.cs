@@ -11,6 +11,7 @@ public class PlayerManager : MonoBehaviour
 {
     PhotonView pv;
     GameObject controller;
+    GameModeManager gameModeManager;
 
     int kills;
     int deaths;
@@ -24,6 +25,7 @@ public class PlayerManager : MonoBehaviour
 
     void Start()
     {
+        gameModeManager = FindAnyObjectByType<GameModeManager>();
         if (pv.IsMine)
         {
             Spawn();
@@ -41,6 +43,7 @@ public class PlayerManager : MonoBehaviour
     public void Die()
     {
         PhotonNetwork.Destroy(controller);
+ 
         StartCoroutine(Respawn());
 
         deaths++;
@@ -73,6 +76,7 @@ public class PlayerManager : MonoBehaviour
     IEnumerator Respawn()
     {
         yield return new WaitForSeconds(respawnTime);
-        Spawn();
+        if (gameModeManager.timeRemain > 0)
+            Spawn();
     }
 }
