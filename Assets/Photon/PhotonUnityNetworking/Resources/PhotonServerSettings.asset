@@ -45,6 +45,7 @@ MonoBehaviour:
   - RPC_EnableWire
   - RPC_UpdateWireHip
   - RPC_DisableWire
+  - RestartGame
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

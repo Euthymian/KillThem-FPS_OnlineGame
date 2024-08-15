@@ -53,4 +53,17 @@ public class Scoreboard : MonoBehaviourPunCallbacks
             }
         }
     }
+
+    public void ResetScoreBoard()
+    {
+        foreach (var child in container.GetComponentsInChildren<ScoreboardItem>())
+        {
+            Destroy(child.gameObject);
+        }
+
+        foreach (Player player in PhotonNetwork.PlayerList)
+        {
+            AddScoreBoardItem(player);
+        }
+    }
 }

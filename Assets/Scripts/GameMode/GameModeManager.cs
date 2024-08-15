@@ -5,6 +5,12 @@ using Photon.Pun;
 
 public class GameModeManager : MonoBehaviourPunCallbacks
 {
-    public int maxTime;
-    public float timeRemain;
+    [HideInInspector] public int maxTime;
+    [HideInInspector] public float timeRemain;
+    [HideInInspector] public bool isGameEnd;
+
+    public void ResetGameTimer()
+    {
+        timeRemain = maxTime;
+    }
 }

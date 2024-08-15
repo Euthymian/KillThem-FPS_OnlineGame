@@ -738,7 +738,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 510109231}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1532360263}
+        m_TargetAssemblyTypeName: DeathMatchManager, Assembly-CSharp
+        m_MethodName: OnClickRestart
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &510109231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1272,7 +1284,7 @@ GameObject:
   - component: {fileID: 661494186}
   - component: {fileID: 661494185}
   m_Layer: 5
-  m_Name: EndGameOption
+  m_Name: EndGameOptionCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2909,8 +2921,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1532360264}
   - component: {fileID: 1532360263}
+  - component: {fileID: 1532360265}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: GameModeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2930,10 +2943,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxTime: 0
   timeRemain: 0
+  isGameEnd: 0
   minuteText: {fileID: 657972202}
   secondText: {fileID: 1185209920}
   canvasGroup: {fileID: 349820892}
-  leaveRoomCanvas: {fileID: 661494187}
+  endGameOptionCanvas: {fileID: 661494184}
+  scoreboard: {fileID: 349820890}
   startButton: {fileID: 510109227}
   readyButton: {fileID: 1884022912}
 --- !u!4 &1532360264
@@ -2951,6 +2966,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1532360265
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1532360262}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 998
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &1545445401
 GameObject:
   m_ObjectHideFlags: 0
@@ -3440,7 +3477,6 @@ GameObject:
   - component: {fileID: 1777811845}
   - component: {fileID: 1777811844}
   - component: {fileID: 1777811843}
-  - component: {fileID: 1777811842}
   m_Layer: 5
   m_Name: LeaveButton
   m_TagString: Untagged
@@ -3468,18 +3504,6 @@ RectTransform:
   m_AnchoredPosition: {x: -295, y: 70}
   m_SizeDelta: {x: 500, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &1777811842
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1777811840}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28aaaaa8d645c764692a4dcad882d391, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1777811843
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3524,9 +3548,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1777811842}
-        m_TargetAssemblyTypeName: LeaveRoom, Assembly-CSharp
-        m_MethodName: OnClick
+      - m_Target: {fileID: 1532360263}
+        m_TargetAssemblyTypeName: DeathMatchManager, Assembly-CSharp
+        m_MethodName: OnClickLeaveRoom
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

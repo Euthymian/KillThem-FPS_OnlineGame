@@ -34,7 +34,7 @@ public class PlayerManager : MonoBehaviour
         Cursor.visible = false;
     }
 
-    void Spawn()
+    public void Spawn()
     {
         Transform spawnPoint = SpawnManager.Instance.GetSpawnPoint();
         controller = PhotonNetwork.Instantiate(Path.Combine("PhotonPrefabs", "PlayerController"), spawnPoint.position, spawnPoint.rotation, 0, new object[] { pv.ViewID });
@@ -78,5 +78,16 @@ public class PlayerManager : MonoBehaviour
         yield return new WaitForSeconds(respawnTime);
         if (gameModeManager.timeRemain > 0)
             Spawn();
+    }
+
+    public void ResetStats()
+    {
+        kills = 0;
+        deaths = 0;
+
+        Hashtable hashtable = new Hashtable();
+        hashtable.Add("Kills", kills);
+        hashtable.Add("Deaths", deaths);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
     }
 }

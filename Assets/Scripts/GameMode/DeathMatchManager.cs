@@ -8,18 +8,21 @@ using Photon.Realtime;
 
 public class DeathMatchManager : GameModeManager
 {
-    int timeForDeathMatch = 4;
+    PhotonView pv;
+
+    int timeForDeathMatch = 30;
 
     [SerializeField] TMP_Text minuteText;
     [SerializeField] TMP_Text secondText;
 
     [SerializeField] CanvasGroup canvasGroup;
-    [SerializeField] Canvas leaveRoomCanvas;
+    [SerializeField] GameObject endGameOptionCanvas;
+    [SerializeField] Scoreboard scoreboard;
 
     [SerializeField] GameObject startButton;
     [SerializeField] GameObject readyButton;
 
-    bool readyToLoad = true;
+    bool ableToActivateEndGameOption = true;
 
     private void Start()
     {
@@ -27,17 +30,28 @@ public class DeathMatchManager : GameModeManager
         timeRemain = maxTime;
         PhotonNetwork.AutomaticallySyncScene = false;
         InvokeRepeating(nameof(GetMinutes), 0, 1f);
-        InvokeRepeating(nameof (GetSeconds), 0, 0.8f);
+        InvokeRepeating(nameof(GetSeconds), 0, 0.8f);
+        pv = GetComponent<PhotonView>();
+    }
+
+    void GetMinutes()
+    {
+        minuteText.text = ((int)(timeRemain / 60)).ToString();
+    }
+
+    void GetSeconds()
+    {
+        secondText.text = Mathf.Ceil((int)timeRemain - (int)(timeRemain / 60) * 60).ToString();
     }
 
     private void Update()
     {
-        if(timeRemain > 0)
+        if (timeRemain > 0)
             timeRemain -= Time.deltaTime;
 
-        if(timeRemain <= 0)
+        if (timeRemain <= 0)
         {
-            if(readyToLoad)
+            if (ableToActivateEndGameOption)
             {
                 Cursor.lockState = CursorLockMode.None;
                 Cursor.visible = true;
@@ -48,12 +62,13 @@ public class DeathMatchManager : GameModeManager
                 }
 
                 canvasGroup.alpha = 1.0f;
-                leaveRoomCanvas.gameObject.SetActive(true);
+                endGameOptionCanvas.SetActive(true);
                 startButton.SetActive(PhotonNetwork.IsMasterClient);
                 readyButton.SetActive(!PhotonNetwork.IsMasterClient);
-            }
 
-            readyToLoad = false;
+                ableToActivateEndGameOption = false;
+                isGameEnd = true;
+            }
         }
     }
 
@@ -63,13 +78,42 @@ public class DeathMatchManager : GameModeManager
         readyButton.SetActive(!PhotonNetwork.IsMasterClient);
     }
 
-    void GetMinutes()
+    public void OnClickRestart()
     {
-        minuteText.text = ((int)(timeRemain / 60)).ToString();
+        pv.RPC(nameof(RestartGame), RpcTarget.All);
     }
 
-    void GetSeconds()
+    [PunRPC]
+    void RestartGame()
     {
-        secondText.text = Mathf.Ceil((int)timeRemain - (int)(timeRemain/60)*60).ToString();
+        ResetGameTimer();
+        foreach (var item in FindObjectsByType<PlayerManager>(FindObjectsSortMode.None))
+        {
+            if (item.GetComponent<PhotonView>().IsMine)
+            {
+                item.Spawn();
+                item.ResetStats();
+                break;
+            }
+        }
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        canvasGroup.alpha = 0.0f;
+        startButton.SetActive(false);
+        readyButton.SetActive(false);
+        endGameOptionCanvas.SetActive(false);
+        scoreboard.ResetScoreBoard();
+        ableToActivateEndGameOption = true;
+        isGameEnd = false;
+    }
+
+    public void OnClickLeaveRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+    }
+
+    public override void OnLeftRoom()
+    {
+        PhotonNetwork.LoadLevel(0);
     }
 }

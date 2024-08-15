@@ -9,6 +9,8 @@ using ExitGames.Client.Photon.StructWrapping;
 public class ScoreboardItem : MonoBehaviourPunCallbacks
 {
     public TMP_Text usernameText, killsText, deathsText;
+    public GameObject masterClientIndicator;
+    public GameObject readyIndicator;
     public Player player;
 
     public void Initialize(Player player)
