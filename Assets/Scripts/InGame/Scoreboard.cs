@@ -5,14 +5,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Scoreboard : MonoBehaviour
+public class Scoreboard : MonoBehaviourPunCallbacks
 {
     [SerializeField] Transform container;
     [SerializeField] GameObject scoreboardItemPrefab;
     [SerializeField] CanvasGroup canvasGroup;
+    GameModeManager gameModeManager;
 
     private void Start()
     {
+        gameModeManager = FindAnyObjectByType<GameModeManager>();
         foreach (Player player in PhotonNetwork.PlayerList) 
         {
             AddScoreBoardItem(player);
@@ -25,15 +27,30 @@ public class Scoreboard : MonoBehaviour
         item.Initialize(player);
     }
 
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        foreach (var child in container.GetComponentsInChildren<ScoreboardItem>())
+        {
+            if (child.player == otherPlayer)
+            {
+                Destroy(child.gameObject);
+                break;
+            }
+        }
+    }
+
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Tab))
+        if (gameModeManager.timeRemain > 0)
         {
-            canvasGroup.alpha = 1;
-        }
-        else if (Input.GetKeyUp(KeyCode.Tab))
-        {
-            canvasGroup.alpha = 0;
+            if (Input.GetKeyDown(KeyCode.Tab))
+            {
+                canvasGroup.alpha = 1;
+            }
+            else if (Input.GetKeyUp(KeyCode.Tab))
+            {
+                canvasGroup.alpha = 0;
+            }
         }
     }
 }

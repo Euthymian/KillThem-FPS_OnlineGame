@@ -6,6 +6,7 @@ using TMPro;
 using Photon.Realtime;
 using UnityEngine.SceneManagement;
 using System;
+using UnityEngine.UI;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -28,7 +29,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     [SerializeField] Transform playerListContent;
     [SerializeField] GameObject playerListItemPrefab;
     [SerializeField] GameObject startGameButton;
-    private static Dictionary<string, RoomInfo> cachedRoomList = new Dictionary<string, RoomInfo>();
+    [SerializeField] GameObject leaveRoomButton;
+    [SerializeField] GameManager gameManager;
 
     private void Update()
     {
@@ -83,6 +85,10 @@ public class Launcher : MonoBehaviourPunCallbacks
         }
 
         startGameButton.SetActive(PhotonNetwork.IsMasterClient);
+        if(!PhotonNetwork.IsMasterClient)
+        {
+            leaveRoomButton.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, leaveRoomButton.GetComponent<RectTransform>().anchoredPosition.y);
+        }
     }
 
     public override void OnMasterClientSwitched(Player newMasterClient)
@@ -119,23 +125,9 @@ public class Launcher : MonoBehaviourPunCallbacks
             Destroy(trans.gameObject);
         }
 
-        for (int i = 0; i < roomList.Count; i++)
+        foreach (KeyValuePair<string, RoomInfo> entry in gameManager.cachedRoomList)
         {
-            RoomInfo info = roomList[i];
-            if (info.RemovedFromList)
-            {
-                cachedRoomList.Remove(info.Name);
-            }
-            else
-            {
-                cachedRoomList[info.Name] = info;
-            }
-        }
-
-        foreach (KeyValuePair<string, RoomInfo> entry in cachedRoomList)
-        {
-            Debug.Log("name: "+entry.Value.Name+"   num of player: " + entry.Value.PlayerCount + "   status: " + entry.Value.IsOpen);
-            Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().Setup(cachedRoomList[entry.Key]);
+            Instantiate(roomListItemPrefab, roomListContent).GetComponent<RoomListItem>().Setup(gameManager.cachedRoomList[entry.Key]);
         }
     }
 
