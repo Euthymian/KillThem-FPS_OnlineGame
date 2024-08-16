@@ -131,6 +131,12 @@ public class DeathMatchManager : GameModeManager
     {
         startButton.SetActive(PhotonNetwork.IsMasterClient);
         readyButton.SetActive(!PhotonNetwork.IsMasterClient);
+        unreadyButton.SetActive(!PhotonNetwork.IsMasterClient);
+        if (PhotonNetwork.MasterClient == PhotonNetwork.LocalPlayer)
+        {
+            PhotonNetwork.LocalPlayer.CustomProperties.Remove(Utilities.readyKey);
+            EnableButton(leaveButton);
+        }
     }
 
     public void OnClickRestart()

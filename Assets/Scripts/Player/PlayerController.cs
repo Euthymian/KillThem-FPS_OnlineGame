@@ -356,6 +356,11 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             Destroy(items[currentItemIndex].GetComponentInChildren<Camera>());
         }
 
+        if(((Gun)items[currentItemIndex]).itemInfo.itemName == "Rifle")
+        {
+            
+        }
+
         // Update GunUI
         if (pv.IsMine)
         {
