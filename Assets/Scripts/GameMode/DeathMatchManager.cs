@@ -5,6 +5,8 @@ using UnityEngine;
 using Photon.Pun;
 using UnityEngine.Events;
 using Photon.Realtime;
+using Hashtable = ExitGames.Client.Photon.Hashtable;
+using UnityEngine.UI;
 
 public class DeathMatchManager : GameModeManager
 {
@@ -19,8 +21,10 @@ public class DeathMatchManager : GameModeManager
     [SerializeField] GameObject endGameOptionCanvas;
     [SerializeField] Scoreboard scoreboard;
 
+    [SerializeField] GameObject leaveButton;
     [SerializeField] GameObject startButton;
     [SerializeField] GameObject readyButton;
+    [SerializeField] GameObject unreadyButton;
 
     bool ableToActivateEndGameOption = true;
 
@@ -67,8 +71,59 @@ public class DeathMatchManager : GameModeManager
                 readyButton.SetActive(!PhotonNetwork.IsMasterClient);
 
                 ableToActivateEndGameOption = false;
-                isGameEnd = true;
+                OnGameEndEvent.Invoke();
             }
+
+            int maxNumberOfReadyPlayers = PhotonNetwork.PlayerList.Length - 1;
+            int currentNumberOfReadyPlayers = 0;
+            foreach (var item in PhotonNetwork.PlayerList)
+            {
+                if (item.CustomProperties.ContainsKey(Utilities.readyKey)) 
+                    if((bool)item.CustomProperties[Utilities.readyKey])
+                        currentNumberOfReadyPlayers++;
+            }
+
+            if (currentNumberOfReadyPlayers == maxNumberOfReadyPlayers)
+            {
+                EnableButton(startButton);
+            }
+            else
+            {
+                DisableButton(startButton);
+            }
+        }
+    }
+
+    public void ChangeLeaveButtonStatus(bool input)
+    {
+        if (input)
+        {
+            DisableButton(leaveButton);
+        }
+        else
+        {
+            EnableButton(leaveButton);
+        }
+    }
+
+    void DisableButton(GameObject button)
+    {
+        button.GetComponent<Image>().color = new Color(button.GetComponent<Image>().color.r, button.GetComponent<Image>().color.g, button.GetComponent<Image>().color.b, 0.5f);
+        button.GetComponent<Button>().enabled = false;
+    }
+
+    void EnableButton(GameObject button)
+    {
+        button.GetComponent<Image>().color = new Color(button.GetComponent<Image>().color.r, button.GetComponent<Image>().color.g, button.GetComponent<Image>().color.b, 1);
+        button.GetComponent<Button>().enabled = true;
+    }
+
+    public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
+    {
+        if(targetPlayer == PhotonNetwork.LocalPlayer)
+        {
+            if (changedProps.ContainsKey(Utilities.readyKey))
+                ChangeLeaveButtonStatus((bool)targetPlayer.CustomProperties[Utilities.readyKey]);
         }
     }
 
@@ -101,10 +156,15 @@ public class DeathMatchManager : GameModeManager
         canvasGroup.alpha = 0.0f;
         startButton.SetActive(false);
         readyButton.SetActive(false);
+        unreadyButton.SetActive(false);
+        EnableButton(leaveButton);
         endGameOptionCanvas.SetActive(false);
         scoreboard.ResetScoreBoard();
         ableToActivateEndGameOption = true;
-        isGameEnd = false;
+        foreach(Player player in PhotonNetwork.PlayerList)
+        {
+            player.CustomProperties.Remove(Utilities.readyKey);
+        }
     }
 
     public void OnClickLeaveRoom()
@@ -115,5 +175,23 @@ public class DeathMatchManager : GameModeManager
     public override void OnLeftRoom()
     {
         PhotonNetwork.LoadLevel(0);
+    }
+
+    public void OnClickReady()
+    {
+        Hashtable hashtable = new Hashtable();
+        hashtable.Add(Utilities.readyKey, true);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
+        readyButton.SetActive(false);
+        unreadyButton.SetActive(true);
+    }
+
+    public void OnClickUnready()
+    {
+        Hashtable hashtable = new Hashtable();
+        hashtable.Add(Utilities.readyKey, false);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
+        readyButton.SetActive(true);
+        unreadyButton.SetActive(false);
     }
 }

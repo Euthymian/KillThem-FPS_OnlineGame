@@ -49,7 +49,7 @@ public class PlayerManager : MonoBehaviour
         deaths++;
 
         Hashtable hashtable = new Hashtable();
-        hashtable.Add("Deaths", deaths);
+        hashtable.Add(Utilities.deathKey, deaths);
         PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
     }
 
@@ -64,7 +64,7 @@ public class PlayerManager : MonoBehaviour
         kills++;
 
         Hashtable hashtable = new Hashtable();
-        hashtable.Add("Kills", kills);
+        hashtable.Add(Utilities.killKey, kills);
         PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
     }
 
@@ -86,8 +86,8 @@ public class PlayerManager : MonoBehaviour
         deaths = 0;
 
         Hashtable hashtable = new Hashtable();
-        hashtable.Add("Kills", kills);
-        hashtable.Add("Deaths", deaths);
+        hashtable.Add(Utilities.killKey, kills);
+        hashtable.Add(Utilities.deathKey, deaths);
         PhotonNetwork.LocalPlayer.SetCustomProperties(hashtable);
     }
 }
