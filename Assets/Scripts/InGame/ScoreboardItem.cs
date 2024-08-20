@@ -10,7 +10,6 @@ using UnityEngine.UI;
 public class ScoreboardItem : MonoBehaviourPunCallbacks
 {
     public TMP_Text usernameText, killsText, deathsText;
-    public GameObject leaveButton;
     public GameObject masterClientIndicator;
     public GameObject readyIndicator;
     public Player player;

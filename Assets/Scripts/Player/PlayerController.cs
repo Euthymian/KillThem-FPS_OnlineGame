@@ -358,7 +358,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
         if(((Gun)items[currentItemIndex]).itemInfo.itemName == "Rifle")
         {
-            
+            onScope = false;
         }
 
         // Update GunUI

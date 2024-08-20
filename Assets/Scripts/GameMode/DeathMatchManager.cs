@@ -12,7 +12,7 @@ public class DeathMatchManager : GameModeManager
 {
     PhotonView pv;
 
-    int timeForDeathMatch = 30;
+    int timeForDeathMatch = 420;
 
     [SerializeField] TMP_Text minuteText;
     [SerializeField] TMP_Text secondText;

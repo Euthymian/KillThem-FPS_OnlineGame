@@ -270,6 +270,7 @@ MonoBehaviour:
   usernameText: {fileID: 9072533620261975094}
   killsText: {fileID: 9020903008963835621}
   deathsText: {fileID: 3460310017326816195}
+  leaveButton: {fileID: 0}
   masterClientIndicator: {fileID: 447307409576604108}
   readyIndicator: {fileID: 2373278874096192379}
 --- !u!1 &2155079512533567409
@@ -539,7 +540,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.48235294}
+  m_Color: {r: 0, g: 0, b: 0, a: 0}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

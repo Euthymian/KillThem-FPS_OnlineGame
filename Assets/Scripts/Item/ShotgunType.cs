@@ -67,7 +67,10 @@ public class ShotgunType : Gun
                 float spreadX = Random.Range(-gunInfo.spreadRange.x, gunInfo.spreadRange.x);
                 float spreadY = Random.Range(-gunInfo.spreadRange.y, gunInfo.spreadRange.y);
 
-                ray.direction = cam.transform.forward + new Vector3(spreadX, spreadY, 0);
+                if(Mathf.Abs(cam.transform.eulerAngles.y-180) == 90 || Mathf.Abs(Mathf.Tan(Mathf.Deg2Rad * cam.transform.eulerAngles.y)) < 1)
+                    ray.direction = cam.transform.forward + new Vector3(spreadX, spreadY, 0);
+                else
+                    ray.direction = cam.transform.forward + new Vector3(0, spreadY, spreadX);
 
                 if (Physics.Raycast(ray, out RaycastHit hit))
                 {
