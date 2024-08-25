@@ -7,6 +7,7 @@ using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.UI;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
 
@@ -40,6 +41,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     float horizontalInput, verticalInput;
     Vector3 moveDir;
     [HideInInspector] public bool needFreezeMove;
+    [SerializeField] Animator movementAnim;
 
     [Header("SlopeMovement")]
     [SerializeField] LayerMask slopeLayerMask;
@@ -86,13 +88,15 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         playerManager = PhotonView.Find((int)pv.InstantiationData[0]).GetComponent<PlayerManager>();
     }
 
+    float horizaltalVelocity => Mathf.Sqrt(rb.velocity.x * rb.velocity.x + rb.velocity.z + rb.velocity.z);
+
     private void Start()
     {
         if (pv.IsMine)
         {
             EquipItem(currentItemIndex);
-            InvokeRepeating(nameof(GetFPS), 1, 0.1f);
-            //InvokeRepeating(nameof(GetSpeed), 1, 0.1f);
+            InvokeRepeating(nameof(GetFPS), 0, 0.5f);
+            //InvokeRepeating(nameof(GetSpeed), 0, 0.5f);
         }
         else
         {
@@ -110,7 +114,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
 
     void GetSpeed()
     {
-        string speed = Mathf.Sqrt(rb.velocity.x * rb.velocity.x + rb.velocity.z + rb.velocity.z).ToString();
+        string speed = ((int)horizaltalVelocity).ToString();
         speedText.text = $"Speed: {speed}";
     }
 
@@ -126,6 +130,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         ApplyGroundGrag();
         SpeedControl();
         UpdateSprint();
+        MovementAnimatonManager();
 
         Jump();
         FalTillDielCheck();
@@ -254,6 +259,17 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
     {
         return Vector3.ProjectOnPlane(moveDir, slopeHit.normal).normalized;
     }
+    
+    void MovementAnimatonManager()
+    {
+        if (!grounded)
+            return;
+
+        if(horizontalInput!=0 || verticalInput!=0)
+            movementAnim.SetBool("IsMoving", true);
+        else
+            movementAnim.SetBool("IsMoving", false);
+    }
 
     #endregion
 
@@ -353,7 +369,9 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
         if (((Gun)items[currentItemIndex]).itemInfo.itemName == "Rifle" && equipRifleFirstTime && !pv.IsMine)
         {
             equipRifleFirstTime = false;
-            Destroy(items[currentItemIndex].GetComponentInChildren<Camera>());
+            Camera scopeCam = items[currentItemIndex].GetComponentInChildren<Camera>();
+            Destroy(scopeCam.GetComponent<PostProcessLayer>());
+            Destroy(scopeCam);
         }
 
         if(((Gun)items[currentItemIndex]).itemInfo.itemName == "Rifle")
@@ -455,7 +473,7 @@ public class PlayerController : MonoBehaviourPunCallbacks, IDamageable
             (items[currentItemIndex].GetType() == typeof(MultipleShotGun) && Input.GetMouseButton(0))
             )
         {
-            items[currentItemIndex].Use();
+            items[currentItemIndex].Use(currentItemIndex);
             UpdateAmmoUI();
         }
     }

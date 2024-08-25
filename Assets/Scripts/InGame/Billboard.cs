@@ -8,9 +8,12 @@ public class Billboard : MonoBehaviour
 
     private void Update()
     {
-        if(cam == null || cam == Camera.main)
+        if(cam == null)
+        {
             cam = FindObjectOfType<Camera>();
-        if (cam == null || cam == Camera.main)
+            if (cam == Camera.main) cam = null;
+        }
+        if (cam == null)
             return;
 
         transform.LookAt(cam.transform);

@@ -12,6 +12,7 @@ public class ShotgunType : Gun
     [SerializeField] ParticleSystem muzzleFlask;
     bool readyToShoot = true;
     UnityEvent ReloadEvent = new UnityEvent();
+    [SerializeField] PlayerPhotonSoundManager soundManager;
 
     private void Awake()
     {
@@ -25,10 +26,10 @@ public class ShotgunType : Gun
         ReloadEvent.AddListener(StartReload);
     }
 
-    public override void Use()
+    public override void Use(int currentIndex)
     {
         if(currentAmmos > 0 && !isReloading)
-            Shoot();
+            Shoot(currentIndex);
     }
 
     IEnumerator ReloadProcedure()
@@ -52,13 +53,14 @@ public class ShotgunType : Gun
         ReloadEvent.Invoke();
     }
 
-    private void Shoot()
+    private void Shoot(int currentIndex)
     {
         if (readyToShoot)
         {
             readyToShoot = false;
 
             muzzleFlask.Play();
+            soundManager.PlayShootSFX(currentIndex);
 
             Ray ray = cam.ViewportPointToRay(new Vector3(0.5f, 0.5f));
             ray.origin = cam.transform.position + cam.transform.forward * 1;
